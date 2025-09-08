@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>مولد الصور بالذكاء الاصطناعي</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+  <div class="max-w-xl mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">توليد صورة</h1>
+    <textarea id="prompt" placeholder="صف الصورة هنا..." class="w-full p-3 border rounded mb-4"></textarea>
+    <button id="generateButton" class="w-full bg-blue-600 text-white py-2 rounded">توليد الصورة</button>
+    <div id="imageContainer" class="mt-6 hidden">
+      <img id="generatedImage" class="w-full rounded shadow" />
+    </div>
+  </div>
+  <script>
+    document.getElementById("generateButton").addEventListener("click", async () => {
+      const prompt = document.getElementById("prompt").value;
+      const res = await fetch("/generate-image", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+      const data = await res.json();
+      if (data.image_base64) {
+        document.getElementById("generatedImage").src = `data:image/png;base64,${data.image_base64}`;
+        document.getElementById("imageContainer").classList.remove("hidden");
+      } else {
+        alert("حدث خطأ: " + (data.error || "تعذر توليد الصورة"));
+      }
+    });
+  </script>
+</body>
+</html>
